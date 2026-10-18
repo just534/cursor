@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xread - X/Twitter 内容管理系统</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📖 Xread</h1>
+      <p class="subtitle">X/Twitter 内容收集和管理系统</p>
+      <div class="stats" id="stats">
+        <span>总计: <strong id="totalCount">0</strong></span>
+        <span>作者: <strong id="authorCount">0</strong></span>
+        <span>本周: <strong id="recentCount">0</strong></span>
+      </div>
+    </header>
+
+    <div class="action-bar">
+      <button class="btn btn-primary" onclick="showAddForm()">➕ 添加推文</button>
+      <div class="export-buttons">
+        <button class="btn btn-secondary" onclick="exportData('json')">📥 导出 JSON</button>
+        <button class="btn btn-secondary" onclick="exportData('markdown')">📥 导出 Markdown</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="🔍 搜索推文内容、作者或笔记..." onkeyup="handleSearch()">
+      <input type="text" id="authorFilter" placeholder="👤 按作者筛选..." onkeyup="handleSearch()">
+      <input type="date" id="startDate" onchange="handleSearch()">
+      <input type="date" id="endDate" onchange="handleSearch()">
+      <button class="btn btn-clear" onclick="clearFilters()">清除筛选</button>
+    </div>
+
+    <div id="addFormContainer" class="form-container" style="display: none;">
+      <div class="form-card">
+        <h2>添加新推文</h2>
+        <form id="addTweetForm" onsubmit="addTweet(event)">
+          <div class="form-group">
+            <label for="link">推文链接 *</label>
+            <input type="url" id="link" required placeholder="https://x.com/username/status/...">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="author">作者名称 *</label>
+              <input type="text" id="author" required placeholder="例如: 张三">
+            </div>
+            <div class="form-group">
+              <label for="author_handle">作者账号</label>
+              <input type="text" id="author_handle" placeholder="例如: @username">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="content">推文内容 *</label>
+            <textarea id="content" required rows="4" placeholder="输入推文的完整内容..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="posted_at">发布时间</label>
+              <input type="datetime-local" id="posted_at">
+            </div>
+            <div class="form-group">
+              <label for="tweet_id">推文 ID</label>
+              <input type="text" id="tweet_id" placeholder="从链接中提取">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="tags">标签</label>
+            <input type="text" id="tags" placeholder="用逗号分隔">
+          </div>
+          <div class="form-group">
+            <label for="notes">个人笔记</label>
+            <textarea id="notes" rows="2" placeholder="添加你的想法或备注..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <button type="button" class="btn btn-secondary" onclick="hideAddForm()">取消</button>
+            <button type="button" class="btn btn-helper" onclick="autoFillFromLink()">🔧 从链接自动提取</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="tweetsList" class="tweets-list">
+      <div class="loading">加载中...</div>
+    </div>
+
+    <div id="editModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>编辑推文</h2>
+        <form id="editTweetForm" onsubmit="updateTweet(event)">
+          <input type="hidden" id="edit_id">
+          <div class="form-group">
+            <label for="edit_link">推文链接 *</label>
+            <input type="url" id="edit_link" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit_author">作者名称 *</label>
+              <input type="text" id="edit_author" required>
+            </div>
+            <div class="form-group">
+              <label for="edit_author_handle">作者账号</label>
+              <input type="text" id="edit_author_handle">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit_content">推文内容 *</label>
+            <textarea id="edit_content" required rows="4"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="edit_posted_at">发布时间</label>
+            <input type="datetime-local" id="edit_posted_at">
+          </div>
+          <div class="form-group">
+            <label for="edit_tags">标签</label>
+            <input type="text" id="edit_tags">
+          </div>
+          <div class="form-group">
+            <label for="edit_notes">个人笔记</label>
+            <textarea id="edit_notes" rows="2"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">更新</button>
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
